@@ -1,0 +1,261 @@
+﻿<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Admin přehled – Úlohy 23.11.2026</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app-shell">
+    <header class="page-header">
+      <div class="step-pill">Admin přehled • Živá data</div>
+      <h1 class="page-title">Přehled objednávek</h1>
+      <p class="page-subtitle">Automaticky načteno z Firebase Realtime Database</p>
+    </header>
+
+
+    <div id="admin-loading" class="glass-card">
+      <div class="loading-inline">
+        <span class="spinner"></span>
+        <span>Načítám data z databáze...</span>
+      </div>
+    </div>
+
+
+    <div id="admin-error" class="alert-box alert-error hidden"></div>
+
+
+    <div id="admin-content" class="hidden">
+      <!-- Objednávka 1 -->
+      <section class="glass-card">
+        <div class="task-card-top" style="margin-bottom: 12px;">
+          <span class="task-badge">Objednávka 1</span>
+          <span id="badge-o1" class="status-done hidden">✓ Uloženo</span>
+        </div>
+
+
+        <div class="kv-list" style="margin: 0;">
+          <div class="kv-row">
+            <div class="kv-content">
+              <div class="kv-key">Číslo první objednávky</div>
+              <div class="kv-val" id="admin-o1-num">Zatím nevyplněno</div>
+            </div>
+            <button type="button" id="copy-o1-btn" class="copy-btn hidden" data-copy="">Kopírovat</button>
+          </div>
+          <div class="kv-row hidden" id="admin-o1-time-row">
+            <div class="kv-content">
+              <div class="kv-key">Čas uložení</div>
+              <div class="kv-val" id="admin-o1-time" style="font-size: 14px; font-weight: 500; color: var(--text-secondary);">—</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- Objednávka 2 -->
+      <section class="glass-card">
+        <div class="task-card-top" style="margin-bottom: 12px;">
+          <span class="task-badge">Objednávka 2 – Formulář</span>
+          <span id="badge-o2" class="status-done hidden">✓ Dokončeno</span>
+        </div>
+
+
+        <div id="admin-o2-empty" class="alert-box alert-info" style="margin-bottom: 0;">
+          Formulář u objednávky 2 zatím nebyl odeslán.
+        </div>
+
+
+        <div id="admin-o2-data" class="kv-list hidden" style="margin: 0;">
+          <div class="kv-row">
+            <div class="kv-content">
+              <div class="kv-key">Jméno a Příjmení</div>
+              <div class="kv-val" id="a-name">—</div>
+            </div>
+            <button type="button" class="copy-btn" id="c-name" data-copy="">Kopírovat</button>
+          </div>
+
+
+          <div class="kv-row">
+            <div class="kv-content">
+              <div class="kv-key">Telefon</div>
+              <div class="kv-val" id="a-phone">—</div>
+            </div>
+            <button type="button" class="copy-btn" id="c-phone" data-copy="">Kopírovat</button>
+          </div>
+
+
+          <div class="kv-row">
+            <div class="kv-content">
+              <div class="kv-key">E-mail</div>
+              <div class="kv-val" id="a-email">—</div>
+            </div>
+            <button type="button" class="copy-btn" id="c-email" data-copy="">Kopírovat</button>
+          </div>
+
+
+          <div class="kv-row">
+            <div class="kv-content">
+              <div class="kv-key">Výdejní místo</div>
+              <div class="kv-val" id="a-pickup">—</div>
+            </div>
+            <button type="button" class="copy-btn" id="c-pickup" data-copy="">Kopírovat</button>
+          </div>
+
+
+          <div class="kv-row">
+            <div class="kv-content">
+              <div class="kv-key">Celková cena</div>
+              <div class="kv-val" id="a-total">—</div>
+            </div>
+          </div>
+
+
+          <div class="kv-row">
+            <div class="kv-content">
+              <div class="kv-key">Číslo objednávky</div>
+              <div class="kv-val" id="a-ordernum">—</div>
+            </div>
+            <button type="button" class="copy-btn" id="c-ordernum" data-copy="">Kopírovat</button>
+          </div>
+
+
+          <div class="kv-row">
+            <div class="kv-content">
+              <div class="kv-key">Čas odeslání</div>
+              <div class="kv-val" id="a-time" style="font-size: 14px; font-weight: 500; color: var(--text-secondary);">—</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+
+  <!-- Firebase Compat SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyDRh9sYac9VC08GHPlIC-Nv27bzdakF_kY",
+      authDomain: "rl-body-2311.firebaseapp.com",
+      databaseURL: "https://rl-body-2311-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "rl-body-2311",
+      storageBucket: "rl-body-2311.firebasestorage.app",
+      messagingSenderId: "990223516118",
+      appId: "1:990223516118:web:7b68471192ec48f15b6477"
+    };
+
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+
+    const loadingBox = document.getElementById("admin-loading");
+    const errorBox = document.getElementById("admin-error");
+    const contentBox = document.getElementById("admin-content");
+
+
+    function setField(textId, btnId, value) {
+      const displayVal = (value !== undefined && value !== null && String(value).trim() !== "") ? String(value) : "—";
+      document.getElementById(textId).textContent = displayVal;
+      if (btnId) {
+        const btn = document.getElementById(btnId);
+        btn.setAttribute("data-copy", displayVal);
+      }
+    }
+
+
+    // Živý poslech změn ve složce objednavky
+    db.ref("objednavky").on("value", (snapshot) => {
+      loadingBox.classList.add("hidden");
+      errorBox.classList.add("hidden");
+      contentBox.classList.remove("hidden");
+
+
+      const data = snapshot.val() || {};
+
+
+      // --- Objednávka 1 ---
+      const o1 = data.objednavka1;
+      const o1NumEl = document.getElementById("admin-o1-num");
+      const o1CopyBtn = document.getElementById("copy-o1-btn");
+      const o1Badge = document.getElementById("badge-o1");
+      const o1TimeRow = document.getElementById("admin-o1-time-row");
+
+
+      if (o1 && o1.cislo_objednavky !== undefined) {
+        const val = o1.cislo_objednavky.trim() !== "" ? o1.cislo_objednavky : "(odesláno prázdné pole)";
+        o1NumEl.textContent = val;
+        o1Badge.classList.remove("hidden");
+        if (o1.cislo_objednavky.trim() !== "") {
+          o1CopyBtn.setAttribute("data-copy", o1.cislo_objednavky);
+          o1CopyBtn.classList.remove("hidden");
+        } else {
+          o1CopyBtn.classList.add("hidden");
+        }
+        if (o1.cas_ulozeni) {
+          document.getElementById("admin-o1-time").textContent = o1.cas_ulozeni;
+          o1TimeRow.classList.remove("hidden");
+        }
+      } else {
+        o1NumEl.textContent = "Zatím nevyplněno";
+        o1Badge.classList.add("hidden");
+        o1CopyBtn.classList.add("hidden");
+        o1TimeRow.classList.add("hidden");
+      }
+
+
+      // --- Objednávka 2 ---
+      const o2 = data.objednavka2;
+      const o2Empty = document.getElementById("admin-o2-empty");
+      const o2Data = document.getElementById("admin-o2-data");
+      const o2Badge = document.getElementById("badge-o2");
+
+
+      if (o2 && o2.cislo_objednavky) {
+        o2Empty.classList.add("hidden");
+        o2Data.classList.remove("hidden");
+        o2Badge.classList.remove("hidden");
+
+
+        setField("a-name", "c-name", o2.jmeno_prijmeni);
+        setField("a-phone", "c-phone", o2.telefon);
+        setField("a-email", "c-email", o2.email);
+        setField("a-pickup", "c-pickup", o2.vydejni_misto);
+        setField("a-total", null, o2.celkova_cena);
+        setField("a-ordernum", "c-ordernum", o2.cislo_objednavky);
+        setField("a-time", null, o2.cas_ulozeni);
+      } else {
+        o2Empty.classList.remove("hidden");
+        o2Data.classList.add("hidden");
+        o2Badge.classList.add("hidden");
+      }
+    }, (err) => {
+      loadingBox.classList.add("hidden");
+      errorBox.classList.remove("hidden");
+      errorBox.textContent = "Chyba při čtení z databáze: " + err.message;
+    });
+
+
+    // Kopírování do schránky
+    document.addEventListener("click", async (e) => {
+      const btn = e.target.closest(".copy-btn");
+      if (!btn) return;
+      const text = btn.getAttribute("data-copy");
+      if (!text || text === "—") return;
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = "Zkopírováno ✓";
+        btn.classList.add("copied");
+        setTimeout(() => {
+          btn.textContent = "Kopírovat";
+          btn.classList.remove("copied");
+        }, 1500);
+      } catch {}
+    });
+  </script>
+</body>
+</html>
